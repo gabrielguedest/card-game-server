@@ -9,6 +9,7 @@ class Player {
   public mana: number = 1
   public maxMana: number = 10
   public hand: Card[] = []
+  public board: Card[] = []
 
   constructor(socket) {
     this.socket = socket

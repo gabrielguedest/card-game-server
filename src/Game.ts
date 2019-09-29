@@ -1,3 +1,4 @@
+import { Card } from './Card';
 import { io } from './socket'
 import Player from './Player'
 import Lobby from './Lobby'
@@ -27,6 +28,12 @@ class Game {
       socket.on('unready', () => this.playerUnready(player))
 
       socket.on('drawCard', (cards: number = 1) => this.drawCard(player, cards))
+
+      socket.on('playCard', (card: Card) => this.playCard(player, card))
+      
+      socket.on('attackCard', ({ attacker, attacked }) => this.cardAttack(player, attacker, attacked))
+      
+      socket.on('endTurn', () => this.endTurn(player))
 
       socket.on('disconnect', () => this.onPlayerDisconnect(player))
     })
@@ -86,12 +93,54 @@ class Game {
     const room = Object.keys(player.get().rooms)[1]
     const match = this.getMatch(room)
 
+    console.log({ "socket-id": player.get().id })
+
     if (!match) {
       console.log('No match found')
       return
     }
 
     match.drawCard(player, cards)
+  }
+
+  private playCard(player: Player, card: Card) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    console.log({ "socket-id": player.get().id })
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+    
+    match.playCard(player, card)
+  }
+
+  private cardAttack(player: Player, attacker: Card, attacked: Card) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    console.log({ "socket-id": player.get().id })
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+
+    match.attackCard(player, attacker, attacked)
+  }
+
+  private endTurn(player: Player) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+
+    match.endTurn(player)
   }
 }
 
