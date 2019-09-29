@@ -3,7 +3,6 @@ import { deckTest } from './Deck01'
 import Player from "./Player"
 import { formatInitialGameData } from './utils/formatData'
 import * as _ from 'lodash'
-import { io } from './socket'
 
 class Match {
   private playerOne: Player
@@ -63,7 +62,6 @@ class Match {
       : this.playerTwo
     const playerSocket = playerToDraw.get()
 
-      
     const drawedCards = this.draw(playerToDraw.deck, cards)
 
     drawedCards.forEach(card => {
@@ -72,12 +70,18 @@ class Match {
 
     playerSocket.emit('cardDrawed', { 
       drawedCards,
-      hand: playerToDraw.hand
+      hand: playerToDraw.hand,
+      deck: playerToDraw.deck,
     })
 
-    playerSocket.broadcast.to(this.room).emit('opponentCardDrawed', {
+    const opponentSocket = playerToDraw === this.playerOne
+      ? this.playerTwo.get()
+      : this.playerOne.get()
+
+    opponentSocket.emit('opponentCardDrawed', {
       drawedCards: drawedCards.length,
       hand: playerToDraw.hand.length,
+      deck: playerToDraw.deck.length,
     })
   }
 }
