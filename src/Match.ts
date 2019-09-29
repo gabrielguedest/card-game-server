@@ -9,6 +9,7 @@ class Match {
   private playerOne: Player
   private playerTwo: Player
   private actor: Player
+  private readyPlayers: number = 0
 
   public room: string
 
@@ -36,8 +37,16 @@ class Match {
     this.playerOne.deck = _.cloneDeep(deckTest)
     this.playerTwo.deck = _.cloneDeep(deckTest)
 
-    this.playerOne.hand = this.draw(this.playerOne.deck, 5)
-    this.playerTwo.hand = this.draw(this.playerTwo.deck, 5)
+    this.playerOne.hand = this.draw(this.playerOne.deck, 4)
+    this.playerTwo.hand = this.draw(this.playerTwo.deck, 4)
+  }
+
+  public addReadyPlayers() {
+    this.readyPlayers += 1
+
+    if (this.readyPlayers === 2) {
+      io.to(this.room).emit('gameReady')
+    }
   }
 
   private draw(deck: Card[], cards): Card[] {
@@ -79,11 +88,15 @@ class Match {
       ? this.playerTwo.get()
       : this.playerOne.get()
 
-    const drawedCards = this.draw(playerToDraw.deck, cards)
+    let drawedCards = []
 
-    drawedCards.forEach(card => {
-      playerToDraw.hand.push(card)
-    })
+    if (playerToDraw.hand.length < 6 && playerToDraw.deck.length >= cards) { 
+      drawedCards = this.draw(playerToDraw.deck, cards)
+
+      drawedCards.forEach(card => {
+        playerToDraw.hand.push(card)
+      })
+    }
 
     playerSocket.emit('cardDrawed', { 
       drawedCards,
@@ -102,19 +115,28 @@ class Match {
     const actualPlayer = this.getPlayer(player)
     const opponent = this.getOpponent(player)
 
-    _.remove(actualPlayer.hand, card) 
-    actualPlayer.board.push(card)
+    const cardPlayed = card.mana <= actualPlayer.actualMana
+      ? card
+      : null
+
+    if (cardPlayed) {
+      _.remove(actualPlayer.hand, card)
+      actualPlayer.board.push(card)
+      actualPlayer.actualMana -= cardPlayed.mana
+    }
 
     actualPlayer.get().emit('cardPlayed', { 
       card: card,
       board: actualPlayer.board,
       hand: actualPlayer.hand,
+      mana: actualPlayer.actualMana,
     })
 
     opponent.get().emit('opponentCardPlayed', {
       card: card,
       board: actualPlayer.board,
       hand: actualPlayer.hand.length,
+      opponentMana: actualPlayer.actualMana,
     })
   }
 
@@ -174,14 +196,29 @@ class Match {
   }
 
   public endTurn(player: Player) {
-    const opponent = player.get().id === this.playerOne.get().id
-      ? this.playerTwo.get()
-      : this.playerOne.get()
+    const opponent = this.getOpponent(player)
+    const actualPlayer = this.getPlayer(player)
 
-    const newActor = opponent.id
+    if (opponent.mana < 10) {
+      opponent.mana += 1
+    }
+
+    opponent.actualMana = opponent.mana
+    actualPlayer.actualMana = opponent.mana
     
-    opponent.emit('playerTurn', { actor: newActor })
-    player.get().emit('opponentTurn', { actor: newActor })
+    const newActor = opponent.get().id
+
+    opponent.get().emit('playerTurn', { 
+      actor: newActor, 
+      mana: opponent.mana, 
+      opponentMana: actualPlayer.mana,
+    })
+
+    actualPlayer.get().emit('opponentTurn', { 
+      actor: newActor, 
+      opponentMana: opponent.mana,
+      mana: actualPlayer.mana,
+    })
   }
 }
 

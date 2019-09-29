@@ -27,6 +27,8 @@ class Game {
 
       socket.on('unready', () => this.playerUnready(player))
 
+      socket.on('canStart', () => this.canStart(player))
+
       socket.on('drawCard', (cards: number = 1) => this.drawCard(player, cards))
 
       socket.on('playCard', (card: Card) => this.playCard(player, card))
@@ -69,6 +71,20 @@ class Game {
 
   private playerUnready(player: Player) {
     this.lobby.removeReadyPlayer(player.get())
+  }
+
+  private canStart(player: Player) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    console.log({ "socket-id": player.get().id })
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+    
+    match.addReadyPlayers()
   }
 
   private gameFound(room: string) {

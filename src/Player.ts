@@ -6,6 +6,7 @@ class Player {
 
   public deck: Card[]
   public life: number = 30
+  public actualMana: number = 1
   public mana: number = 1
   public maxMana: number = 10
   public hand: Card[] = []
