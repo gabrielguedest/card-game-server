@@ -63,7 +63,7 @@ Estão listadas abaixo algumas funcionalidades que devem ser adicionadas no jogo
 ___A ordem da lista não está associada com a ordem em que a funcionalidade será desenvolvida.___
 
 * Deck personalizado
-* Feedback de ações (Mostrar ataque, mostrar a compra de cartas)
+* Feedback/Animações de ações (Mostrar ataque, mostrar a compra de cartas)
 * Efeitos de cartas
 * Cemitério (Enviar carta quando morrer em um ataque)
 * Esquema de vida de cartas igual hearthstone
