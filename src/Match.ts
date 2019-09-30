@@ -49,7 +49,7 @@ class Match {
     }
   }
 
-  private draw(deck: Card[], cards): Card[] {
+  private draw(deck: Card[], cards: number): Card[] {
     let cardsDrawed = []
 
     for (let i = 0; i < cards; i++) {
@@ -159,7 +159,7 @@ class Match {
         opponent.get().emit('defeat')
       }
     } else if (attacker.attack < attacked.defense) {
-      const damage = attacker.defense - attacked.attack
+      const damage = attacked.defense - attacker.attack
       actualPlayer.life -= damage
 
       _.remove(actualPlayer.board, attacker)
@@ -174,7 +174,7 @@ class Match {
       winner = false
     }
 
-    actualPlayer.get().emit('attackedCard', {
+    actualPlayer.get().emit('cardAttack', {
       attacker: attacker,
       attacked: attacked,
       winner: winner,
