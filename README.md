@@ -58,7 +58,7 @@ npm run start:watch
 
 ### Funcionalidades Futuras
 
-Estão listadas abaixo algumas funcionalidades que devem ser adicionadas no jogo, algumas funcionalidades são idéias dos viewers da [stream](twitch.tv/gedes).
+Estão listadas abaixo algumas funcionalidades que devem ser adicionadas no jogo, algumas delas são idéias dos viewers da [stream](twitch.tv/gedes).
 
 ___A ordem da lista não está associada com a ordem em que a funcionalidade será desenvolvida.___
 
