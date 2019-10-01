@@ -29,7 +29,7 @@ class Game {
 
       socket.on('canStart', () => this.canStart(player))
 
-      socket.on('drawCard', (cards: number = 1) => this.drawCard(player, cards))
+      socket.on('drawCard', (cards) => this.drawCard(player, cards))
 
       socket.on('playCard', (card: Card) => this.playCard(player, card))
       
@@ -116,7 +116,9 @@ class Game {
       return
     }
 
-    match.drawCard(player, cards)
+    const cardsToDraw = cards ? cards : 1
+
+    match.drawCard(player, cardsToDraw)
   }
 
   private playCard(player: Player, card: Card) {
