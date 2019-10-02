@@ -34,7 +34,11 @@ class Game {
       socket.on('playCard', (card: Card) => this.playCard(player, card))
       
       socket.on('attackCard', ({ attacker, attacked }) => this.cardAttack(player, attacker, attacked))
+
+      socket.on('selectedCard', (card: Card) => this.selectedCard(player, card))
       
+      socket.on('attackFocus', (card: Card | null) => this.attackFocus(player, card))
+
       socket.on('endTurn', () => this.endTurn(player))
 
       socket.on('disconnect', () => this.onPlayerDisconnect(player))
@@ -109,8 +113,6 @@ class Game {
     const room = Object.keys(player.get().rooms)[1]
     const match = this.getMatch(room)
 
-    console.log({ "socket-id": player.get().id })
-
     if (!match) {
       console.log('No match found')
       return
@@ -133,6 +135,32 @@ class Game {
     }
     
     match.playCard(player, card)
+  }
+
+  private selectedCard(player: Player, card: Card) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+
+    match.selectedCard(player, card)
+  }
+
+  private attackFocus(player: Player, card: Card | null) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    console.log({ "socket-id": player.get().id })
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+    
+    match.attackFocus(player, card)
   }
 
   private cardAttack(player: Player, attacker: Card, attacked: Card) {

@@ -52,6 +52,12 @@ class Match {
   private draw(deck: Card[], cards: number): Card[] {
     let cardsDrawed = []
 
+    if (deck.length === 1) {
+      cardsDrawed.push(deck[0])
+      _.remove(deck, deck[0])
+      return cardsDrawed
+    }
+
     for (let i = 0; i < cards; i++) {
       const randomNumber = Math.floor(Math.random() * (deck.length - 1) + 1)
       cardsDrawed.push(deck[randomNumber])
@@ -100,7 +106,6 @@ class Match {
 
     playerSocket.emit('cardDrawed', { 
       drawedCards,
-      hand: playerToDraw.hand,
       deck: playerToDraw.deck,
     })
 
@@ -138,6 +143,12 @@ class Match {
       hand: actualPlayer.hand.length,
       opponentMana: actualPlayer.actualMana,
     })
+  }
+
+  public selectedCard(player: Player, card: Card) {
+    const opponent = this.getOpponent(player)
+
+    opponent.get().emit('opponentSelectedCard', card)
   }
 
   public attackCard(player: Player, attacker: Card, attacked: Card) {
@@ -193,6 +204,12 @@ class Match {
       life: opponent.life,
       opponentLife: actualPlayer.life,
     })
+  }
+
+  public attackFocus(player: Player, card: Card | null) {
+    const opponent = this.getOpponent(player)
+
+    opponent.get().emit('isAttackFocus', card)
   }
 
   public endTurn(player: Player) {
