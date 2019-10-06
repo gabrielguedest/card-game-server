@@ -75,6 +75,21 @@ class Match {
       : this.playerTwo
   }
 
+  private verifyEndGame(player: Player) {
+    const actualPlayer = this.getPlayer(player) 
+    const opponent = this.getOpponent(player)
+
+    if (actualPlayer.life <= 0) {
+      actualPlayer.get().emit('defeat')
+      opponent.get().emit('victory')
+    }
+
+    if (opponent.life <= 0) {
+      opponent.get().emit('defeat')
+      actualPlayer.get().emit('victory')
+    }
+  }
+
   public emitNewMatch() {
     const playerOne = this.playerOne.get()
     const playerTwo = this.playerTwo.get()
@@ -154,12 +169,15 @@ class Match {
   public attackCard(player: Player, attacker: Card, attacked: Card) {
     const actualPlayer = this.getPlayer(player)
     const opponent = this.getOpponent(player)
+    console.log('atacando carta')
     
     let winner
 
     if (attacker.attack > attacked.defense) {
       const damage = attacker.attack - attacked.defense
-      opponent.life -= damage
+      opponent.life = (opponent.life - damage) > 0
+        ? opponent.life - damage
+        : 0
 
       _.remove(opponent.board, attacked)
 
@@ -171,16 +189,13 @@ class Match {
       }
     } else if (attacker.attack < attacked.defense) {
       const damage = attacked.defense - attacker.attack
-      actualPlayer.life -= damage
+      actualPlayer.life = (actualPlayer.life - damage) > 0
+        ? actualPlayer.life - damage
+        : 0
 
       _.remove(actualPlayer.board, attacker)
 
       winner = attacked
-
-      if (actualPlayer.life <= 0) {
-        opponent.get().emit('victory')
-        actualPlayer.get().emit('defeat')
-      }
     } else {
       winner = false
     }
@@ -204,12 +219,38 @@ class Match {
       life: opponent.life,
       opponentLife: actualPlayer.life,
     })
+
+    this.verifyEndGame(player)
   }
 
   public attackFocus(player: Player, card: Card | null) {
     const opponent = this.getOpponent(player)
 
     opponent.get().emit('isAttackFocus', card)
+  }
+
+  public boardAttackFocus(player: Player) {
+    const opponent = this.getOpponent(player)
+
+    opponent.get().emit('boardAttackFocus')
+  }
+
+  public boardLoseAttackFocus(player: Player) {
+    const opponent = this.getOpponent(player)
+
+    opponent.get().emit('boardLoseAttackFocus')
+  }
+
+  public boardAttack(player: Player, card: Card) {
+    const opponent = this.getOpponent(player)
+
+    opponent.life = (opponent.life - card.attack) > 0
+      ? opponent.life - card.attack
+      : 0
+    
+    opponent.get().emit('boardAttacked', opponent.life)
+
+    this.verifyEndGame(player)
   }
 
   public endTurn(player: Player) {

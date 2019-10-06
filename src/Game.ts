@@ -39,6 +39,12 @@ class Game {
       
       socket.on('attackFocus', (card: Card | null) => this.attackFocus(player, card))
 
+      socket.on('boardAttackFocus', () => this.boardAttackFocus(player))
+
+      socket.on('boardLoseAttackFocus', () => this.boardLoseAttackFocus(player))
+
+      socket.on('boardAttack', (card: Card) => this.boardAttack(player, card))
+
       socket.on('endTurn', () => this.endTurn(player))
 
       socket.on('disconnect', () => this.onPlayerDisconnect(player))
@@ -80,8 +86,6 @@ class Game {
   private canStart(player: Player) {
     const room = Object.keys(player.get().rooms)[1]
     const match = this.getMatch(room)
-
-    console.log({ "socket-id": player.get().id })
 
     if (!match) {
       console.log('No match found')
@@ -127,8 +131,6 @@ class Game {
     const room = Object.keys(player.get().rooms)[1]
     const match = this.getMatch(room)
 
-    console.log({ "socket-id": player.get().id })
-
     if (!match) {
       console.log('No match found')
       return
@@ -153,8 +155,6 @@ class Game {
     const room = Object.keys(player.get().rooms)[1]
     const match = this.getMatch(room)
 
-    console.log({ "socket-id": player.get().id })
-
     if (!match) {
       console.log('No match found')
       return
@@ -163,11 +163,45 @@ class Game {
     match.attackFocus(player, card)
   }
 
-  private cardAttack(player: Player, attacker: Card, attacked: Card) {
+  private boardAttackFocus(player: Player) {
     const room = Object.keys(player.get().rooms)[1]
     const match = this.getMatch(room)
 
-    console.log({ "socket-id": player.get().id })
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+    
+    match.boardAttackFocus(player)
+  }
+
+  private boardLoseAttackFocus(player: Player) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }
+    
+    match.boardLoseAttackFocus(player)  
+  }
+
+  private boardAttack(player: Player, card: Card) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
+
+    if (!match) {
+      console.log('No match found')
+      return
+    }  
+    
+    match.boardAttack(player, card)
+  }
+
+  private cardAttack(player: Player, attacker: Card, attacked: Card) {
+    const room = Object.keys(player.get().rooms)[1]
+    const match = this.getMatch(room)
 
     if (!match) {
       console.log('No match found')
