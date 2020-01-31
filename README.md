@@ -54,16 +54,3 @@ Para executar a aplicação escutando e atualizando assim que houver alguma alte
 yarn start:watch
 npm run start:watch
 ```
-
-
-### Funcionalidades Futuras
-
-Estão listadas abaixo algumas funcionalidades que devem ser adicionadas no jogo, algumas delas são idéias dos viewers da [stream](twitch.tv/gedes).
-
-___A ordem da lista não está associada com a ordem em que a funcionalidade será desenvolvida.___
-
-* Deck personalizado
-* Feedback/Animações de ações (Mostrar ataque, mostrar a compra de cartas)
-* Efeitos de cartas
-* Cemitério (Enviar carta quando morrer em um ataque)
-* Esquema de vida de cartas igual hearthstone
