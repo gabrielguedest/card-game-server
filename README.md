@@ -2,11 +2,7 @@
 
 Esse repositório contém o backend do projeto de um jogo de cartas que combina estilos dos jogos Hearthstone e YuGiOh!
 
-O projeto está sendo desenvolvido inteiramente em [streams](twitch.tv/gedes), para fins de estudos e interação com os viewers. 
-
 As principais ferramentas utilizadas para desenvolver a parte do servidor que está contida nesse repositório foram: NodeJS, Express e Socket.io.
-
-Sinta-se à vontade para abrir uma issue ou uma pull request.
 
 
 ## Começando
